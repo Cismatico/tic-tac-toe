@@ -45,6 +45,7 @@ const gameBoard = ((doc) => {
 
     //Check if a player win
     const _checkWin = () => {
+        let anyWinner = false;
         const winningConditions = [
             [0, 1, 2],
             [3, 4, 5],
@@ -66,10 +67,11 @@ const gameBoard = ((doc) => {
             }
             if (a === b && b === c) {
                 displayController.declareWinner();
+                anyWinner = true;
                 break;
             }
         }
-        if (board[0] !== "" && board[1] !== "" && board[2] !== "" &&
+        if (anyWinner === false && board[0] !== "" && board[1] !== "" && board[2] !== "" &&
             board[3] !== "" && board[4] !== "" && board[5] !== "" &&
             board[6] !== "" && board[7] !== "" && board[8] !== "") {
             displayController.declareDraw();
@@ -91,6 +93,7 @@ const gameBoard = ((doc) => {
     //Reset board
     const resetGame = () => {
         board.splice(0, board.length, "", "", "", "", "", "", "", "", "");
+        player1Turn = true;
     }
 
     //Delete the text of the game board
@@ -108,26 +111,31 @@ const displayController = ((doc) => {
 
     //Write X or O depending on player turn
     const writeLetter = function (that) {
+        const paragraph = doc.querySelector(".player-turn");
         const player1Turn = gameBoard.getPlayer1Turn();
         if (player1Turn) {
             that.textContent = player1.getLetter();
+            paragraph.textContent = "Player 'O' turn";
         } else {
             that.textContent = player2.getLetter();
+            paragraph.textContent = "Player 'X' turn";
         }
     }
     //Write in DOM the winner
     const declareWinner = () => {
+        const paragraph = doc.querySelector(".player-turn");
         if (gameBoard.getPlayer1Turn()) {
-            console.log("Player 1 won");
+            paragraph.textContent = "Player 'X' win!";
         } else {
-            console.log("Player 2 won");
+            paragraph.textContent = "Player 'O' win!";
         }
         _createRestartButton();
         _disableGrid();
     }
 
     const declareDraw = () => {
-        console.log("It's a draw");
+        const paragraph = doc.querySelector(".player-turn");
+        paragraph.textContent = "It's a draw!";
         _createRestartButton();
         _disableGrid();
     }
@@ -145,6 +153,8 @@ const displayController = ((doc) => {
     }
 
     const _restartGame = () => {
+        const paragraph = doc.querySelector(".player-turn");
+        paragraph.textContent = "Player 'X' turn";
         gameBoard.resetGame();
         gameBoard.deleteGridText();
         gameBoard.startGame();
